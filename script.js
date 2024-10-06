@@ -66,6 +66,7 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 const getUsersOperation = ({ transactions }) => {
+  containerTransactions.innerHTML = '';
   transactions.map((transaction, index) => {
     const transitType = transaction > 0 ? 'deposit' : 'withdrawal';
     containerTransactions.insertAdjacentHTML(
