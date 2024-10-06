@@ -66,35 +66,19 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 const getUsersOperation = ({ transactions }) => {
-  const deposits = transactions.filter(item => item > 0);
-  const withdrawals = transactions.filter(item => item < 0);
-
-  deposits.map((deposit, index) => {
+  transactions.map((transaction, index) => {
+    const transitType = transaction > 0 ? 'deposit' : 'withdrawal';
     containerTransactions.insertAdjacentHTML(
-      'beforeend',
+      'afterbegin',
       `<div class="transactions__row">
-          <div class="transactions__type transactions__type--deposit">
-            ${index + 1} депозит
+          <div class="transactions__type transactions__type--${transitType}">
+            ${index + 1} ${transitType}
           </div>
           <div class="transactions__date">2 дня назад</div>
-          <div class="transactions__value">${deposit}$</div>
+          <div class="transactions__value">${transaction}$</div>
         </div>`
     );
   });
-
-  withdrawals.map((withdrawal, index) => {
-    containerTransactions.insertAdjacentHTML(
-      'beforeend',
-      `<div class="transactions__row">
-          <div class="transactions__type transactions__type--withdrawal">
-            ${index + 1} вывод средств
-          </div>
-          <div class="transactions__date">2 дня назад</div>
-          <div class="transactions__value">${withdrawal}$</div>
-        </div>`
-    );
-  });
-  
 };
 
 getUsersOperation(account1);
