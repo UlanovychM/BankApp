@@ -70,12 +70,12 @@ const getUsersOperation = ({ transactions }) => {
   transactions.map((transaction, index) => {
     const transitType = transaction > 0 ? 'deposit' : 'withdrawal';
     containerTransactions.insertAdjacentHTML(
-      'afterbegin',
+      'beforeend',
       `<div class="transactions__row">
           <div class="transactions__type transactions__type--${transitType}">
             ${index + 1} ${transitType}
           </div>
-          <div class="transactions__date">2 дня назад</div>
+          <div class="transactions__date">${index + 1} д назад</div>
           <div class="transactions__value">${transaction}$</div>
         </div>`
     );
