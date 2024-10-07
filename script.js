@@ -65,6 +65,22 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+const createNickname = nickname => {
+  const userName = nickname
+    .toLowerCase()
+    .split(' ')
+    .map(nick => nick[0])
+    .join('');
+
+  return userName;
+};
+
+const addNicknames = acc =>
+  acc.forEach(item => (item.nickname = createNickname(item.userName)));
+
+addNicknames(accounts);
+console.log(accounts);
+
 const getUsersOperation = ({ transactions }) => {
   containerTransactions.innerHTML = '';
   transactions.map((transaction, index) => {
