@@ -79,7 +79,6 @@ const addNicknames = acc =>
   acc.forEach(item => (item.nickname = createNickname(item.userName)));
 
 addNicknames(accounts);
-console.log(accounts);
 
 const getUsersOperation = ({ transactions }) => {
   containerTransactions.innerHTML = '';
@@ -96,6 +95,20 @@ const getUsersOperation = ({ transactions }) => {
         </div>`
     );
   });
+
+  const deposits = transactions
+    .filter(deposit => deposit > 0)
+    .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+
+  labelSumIn.textContent = `${deposits}$`;
+
+  const withdrawals = transactions
+    .filter(withdrawal => withdrawal < 0)
+    .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+
+  labelSumOut.textContent = `${withdrawals}`;
+
+  labelBalance.textContent = `${deposits + withdrawals}$`;
 };
 
 getUsersOperation(account1);
