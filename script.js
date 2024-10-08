@@ -106,7 +106,7 @@ const getUsersOperation = ({ transactions }) => {
     .filter(withdrawal => withdrawal < 0)
     .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
-  labelSumOut.textContent = `${withdrawals}`;
+  labelSumOut.textContent = `${withdrawals}$`;
 
   labelBalance.textContent = `${deposits + withdrawals}$`;
 };
