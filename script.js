@@ -106,9 +106,15 @@ const getUsersOperation = ({ transactions }) => {
     .filter(withdrawal => withdrawal < 0)
     .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
+  const depositProc = transactions
+    .filter(deposit => deposit > 0)
+    .map(deposit => (deposit * 1.1) / 100)
+    .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+
   labelSumOut.textContent = `${withdrawals}$`;
 
   labelBalance.textContent = `${deposits + withdrawals}$`;
+  labelSumInterest.textContent = `${depositProc}%`;
 };
 
 getUsersOperation(account1);
