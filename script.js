@@ -57,6 +57,7 @@ const btnLoan = document.querySelector('.form__btn--loan');
 const btnClose = document.querySelector('.form__btn--close');
 const btnSort = document.querySelector('.btn--sort');
 
+const form = document.querySelector('.login');
 const inputLoginUsername = document.querySelector('.login__input--user');
 const inputLoginPin = document.querySelector('.login__input--pin');
 const inputTransferTo = document.querySelector('.form__input--to');
@@ -80,7 +81,7 @@ const addNicknames = acc =>
 
 addNicknames(accounts);
 
-const getUsersOperation = ({ transactions }) => {
+const getUsersOperation = ({ transactions, interest }) => {
   containerTransactions.innerHTML = '';
   transactions.map((transaction, index) => {
     const transitType = transaction > 0 ? 'deposit' : 'withdrawal';
@@ -108,7 +109,7 @@ const getUsersOperation = ({ transactions }) => {
 
   const depositProc = transactions
     .filter(deposit => deposit > 0)
-    .map(deposit => (deposit * 1.1) / 100)
+    .map(deposit => Math.floor((deposit * interest) / 100))
     .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
   labelSumOut.textContent = `${withdrawals}$`;
@@ -117,4 +118,21 @@ const getUsersOperation = ({ transactions }) => {
   labelSumInterest.textContent = `${depositProc}%`;
 };
 
-getUsersOperation(account1);
+let currentAccount;
+
+btnLogin.addEventListener('click', e => {
+  e.preventDefault();
+
+  currentAccount = accounts.find(
+    account => account.nickname === inputLoginUsername.value
+  );
+
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    labelWelcome.textContent = `Hello ${
+      currentAccount.userName.split(' ')[0]
+    }!`;
+    containerApp.style.opacity = 100;
+    getUsersOperation(currentAccount);
+  }
+  form.reset();
+});
