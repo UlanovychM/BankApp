@@ -81,22 +81,24 @@ const addNicknames = acc =>
 
 addNicknames(accounts);
 
-const getUsersOperation = ({ transactions, interest }) => {
+const getUsersOperation = ({ transactions }) => {
   containerTransactions.innerHTML = '';
   transactions.map((transaction, index) => {
     const transitType = transaction > 0 ? 'deposit' : 'withdrawal';
     containerTransactions.insertAdjacentHTML(
-      'beforeend',
+      'afterbegin',
       `<div class="transactions__row">
           <div class="transactions__type transactions__type--${transitType}">
             ${index + 1} ${transitType}
           </div>
-          <div class="transactions__date">${index + 1} д назад</div>
+          
           <div class="transactions__value">${transaction}$</div>
         </div>`
     );
   });
+};
 
+const userInterface = ({ transactions, interest }) => {
   const deposits = transactions
     .filter(deposit => deposit > 0)
     .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
@@ -114,7 +116,12 @@ const getUsersOperation = ({ transactions, interest }) => {
 
   labelSumOut.textContent = `${withdrawals}$`;
 
-  labelBalance.textContent = `${deposits + withdrawals}$`;
+  const balance = transactions.reduce(
+    (accumulator, currentValue) => accumulator + currentValue,
+    0
+  );
+  accounts.balance = balance;
+  labelBalance.textContent = `${balance}$`;
   labelSumInterest.textContent = `${depositProc}%`;
 };
 
@@ -133,6 +140,32 @@ btnLogin.addEventListener('click', e => {
     }!`;
     containerApp.style.opacity = 100;
     getUsersOperation(currentAccount);
+    userInterface(currentAccount);
   }
   form.reset();
+});
+
+btnTransfer.addEventListener('click', e => {
+  e.preventDefault();
+
+  const transferAmount = Number(inputTransferAmount.value);
+
+  const recipientNick = String(inputTransferTo.value);
+
+  const recipientAccount = accounts.find(
+    account => account.nickname === recipientNick
+  );
+  inputTransferTo.value = '';
+  inputTransferAmount = '';
+  if (
+    transferAmount > 0 &&
+    accounts.balance >= transferAmount &&
+    recipientAccount &&
+    currentAccount.nickname !== recipientAccount.nickname
+  ) {
+    currentAccount.transactions.push(-transferAmount);
+    recipientAccount.transactions.push(transferAmount);
+    getUsersOperation(currentAccount);
+    userInterface(currentAccount);
+  }
 });
