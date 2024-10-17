@@ -156,7 +156,7 @@ btnTransfer.addEventListener('click', e => {
     account => account.nickname === recipientNick
   );
   inputTransferTo.value = '';
-  inputTransferAmount = '';
+  inputTransferAmount.value = '';
   if (
     transferAmount > 0 &&
     accounts.balance >= transferAmount &&
