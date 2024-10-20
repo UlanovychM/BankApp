@@ -58,6 +58,7 @@ const btnClose = document.querySelector('.form__btn--close');
 const btnSort = document.querySelector('.btn--sort');
 
 const form = document.querySelector('.login');
+const formClose = document.querySelector('.form--close');
 const inputLoginUsername = document.querySelector('.login__input--user');
 const inputLoginPin = document.querySelector('.login__input--pin');
 const inputTransferTo = document.querySelector('.form__input--to');
@@ -168,4 +169,23 @@ btnTransfer.addEventListener('click', e => {
     getUsersOperation(currentAccount);
     userInterface(currentAccount);
   }
+});
+
+formClose.addEventListener('submit', e => {
+  e.preventDefault();
+
+  if (
+    e.target.elements.user.value === currentAccount.nickname &&
+    e.target.elements.pass.value === currentAccount.pin
+  ) {
+    const currentIndexAccounts = accounts.indexOf(
+      account => account.nickname === currentAccount.nickname
+    );
+    accounts.splice(currentIndexAccounts, 1);
+  }
+  containerApp.style.opacity = 0;
+  labelWelcome.textContent = 'Войдите в свой аккаунт';
+  console.log(
+    `${e.target.elements.user.value} , ${e.target.elements.pass.value}`
+  );
 });
