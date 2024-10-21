@@ -59,6 +59,7 @@ const btnSort = document.querySelector('.btn--sort');
 
 const form = document.querySelector('.login');
 const formClose = document.querySelector('.form--close');
+const formCredit = document.querySelector('.form--loan');
 const inputLoginUsername = document.querySelector('.login__input--user');
 const inputLoginPin = document.querySelector('.login__input--pin');
 const inputTransferTo = document.querySelector('.form__input--to');
@@ -66,6 +67,8 @@ const inputTransferAmount = document.querySelector('.form__input--amount');
 const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
+
+let currentAccount;
 
 const createNickname = nickname => {
   const userName = nickname
@@ -126,8 +129,6 @@ const userInterface = ({ transactions, interest }) => {
   labelSumInterest.textContent = `${depositProc}%`;
 };
 
-let currentAccount;
-
 btnLogin.addEventListener('click', e => {
   e.preventDefault();
 
@@ -185,7 +186,22 @@ formClose.addEventListener('submit', e => {
   }
   containerApp.style.opacity = 0;
   labelWelcome.textContent = 'Войдите в свой аккаунт';
-  console.log(
-    `${e.target.elements.user.value} , ${e.target.elements.pass.value}`
-  );
+  formClose.reset();
+});
+
+formCredit.addEventListener('submit', e => {
+  e.preventDefault();
+
+  const credit = +e.target.elements.credit.value;
+  console.log(credit);
+
+  if (
+    credit > 0 &&
+    currentAccount.transactions.some(trans => trans > (credit * 10) / 100)
+  ) {
+    currentAccount.transactions.push(credit);
+    userInterface(currentAccount);
+    getUsersOperation(currentAccount);
+  }
+  formCredit.reset();
 });
