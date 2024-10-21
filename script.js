@@ -85,10 +85,16 @@ const addNicknames = acc =>
 
 addNicknames(accounts);
 
-const getUsersOperation = ({ transactions }) => {
+const getUsersOperation = ({ transactions }, sort = false) => {
   containerTransactions.innerHTML = '';
-  transactions.map((transaction, index) => {
+
+  const currentSort = sort
+    ? transactions.slice().sort((x, y) => x - y)
+    : transactions;
+
+  currentSort.map((transaction, index) => {
     const transitType = transaction > 0 ? 'deposit' : 'withdrawal';
+
     containerTransactions.insertAdjacentHTML(
       'afterbegin',
       `<div class="transactions__row">
@@ -204,4 +210,15 @@ formCredit.addEventListener('submit', e => {
     getUsersOperation(currentAccount);
   }
   formCredit.reset();
+});
+
+let sortedTransaction = false;
+
+btnSort.addEventListener('click', e => {
+  e.preventDefault();
+
+  getUsersOperation(currentAccount, !sortedTransaction);
+
+  sortedTransaction = !sortedTransaction;
+  console.log('click');
 });
