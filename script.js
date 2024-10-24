@@ -7,6 +7,18 @@ const account1 = {
   transactions: [500, 250, -300, 5000, -850, -110, -170, 1100],
   interest: 1.5,
   pin: 1111,
+  transactionsDates: [
+    '2023-10-02T14:43:31.074Z',
+    '2023-10-29T11:24:19.761Z',
+    '2023-11-15T10:45:23.907Z',
+    '2024-01-22T12:17:46.255Z',
+    '2024-02-12T15:14:06.486Z',
+    '2024-03-09T11:42:26.371Z',
+    '2024-05-21T07:43:59.331Z',
+    '2024-06-22T15:21:20.814Z',
+  ],
+  currency: 'USD',
+  locale: 'en-US',
 };
 
 const account2 = {
@@ -14,6 +26,18 @@ const account2 = {
   transactions: [2000, 6400, -1350, -70, -210, -2000, 5500, -30],
   interest: 1.3,
   pin: 2222,
+  transactionsDates: [
+    '2023-10-02T14:43:31.074Z',
+    '2023-10-29T11:24:19.761Z',
+    '2023-11-15T10:45:23.907Z',
+    '2024-01-22T12:17:46.255Z',
+    '2024-02-12T15:14:06.486Z',
+    '2024-03-09T11:42:26.371Z',
+    '2024-05-21T07:43:59.331Z',
+    '2024-06-22T15:21:20.814Z',
+  ],
+  currency: 'UAH',
+  locale: 'uk-UA',
 };
 
 const account3 = {
@@ -21,6 +45,18 @@ const account3 = {
   transactions: [900, -200, 280, 300, -200, 150, 1400, -400],
   interest: 0.8,
   pin: 3333,
+  transactionsDates: [
+    '2023-10-02T14:43:31.074Z',
+    '2023-10-29T11:24:19.761Z',
+    '2023-11-15T10:45:23.907Z',
+    '2024-01-22T12:17:46.255Z',
+    '2024-02-12T15:14:06.486Z',
+    '2024-03-09T11:42:26.371Z',
+    '2024-05-21T07:43:59.331Z',
+    '2024-06-22T15:21:20.814Z',
+  ],
+  currency: 'UAH',
+  locale: 'uk-UA',
 };
 
 const account4 = {
@@ -28,6 +64,15 @@ const account4 = {
   transactions: [530, 1300, 500, 40, 190],
   interest: 1,
   pin: 4444,
+  transactionsDates: [
+    '2023-10-02T14:43:31.074Z',
+    '2023-10-29T11:24:19.761Z',
+    '2023-11-15T10:45:23.907Z',
+    '2024-01-22T12:17:46.255Z',
+    '2024-02-12T15:14:06.486Z',
+  ],
+  currency: 'EUR',
+  locale: 'fr-CA',
 };
 
 const account5 = {
@@ -35,9 +80,20 @@ const account5 = {
   transactions: [630, 800, 300, 50, 120],
   interest: 1.1,
   pin: 5555,
+  transactionsDates: [
+    '2023-10-02T14:43:31.074Z',
+    '2023-10-29T11:24:19.761Z',
+    '2023-11-15T10:45:23.907Z',
+    '2024-01-22T12:17:46.255Z',
+    '2024-02-12T15:14:06.486Z',
+  ],
+  currency: 'USD',
+  locale: 'en-US',
 };
 
 const accounts = [account1, account2, account3, account4, account5];
+let currentAccount;
+let sortedTransaction = false;
 
 // Elements
 const labelWelcome = document.querySelector('.welcome');
@@ -68,7 +124,29 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-let currentAccount;
+// const now = new Date();
+// const day = now.getDate();
+// const month = now.getMonth();
+// const year = now.getFullYear();
+
+// const getZero = num => {
+//   if (num >= 0 && num < 10) {
+//     return `0${num}`;
+//   } else {
+//     return num;
+//   }
+// };
+
+// labelDate.textContent = `${getZero(day)}/${getZero(month)}/${year}`;
+
+const getZero = num => num.padStart(2, '0');
+
+const now = new Date();
+const day = getZero(`${now.getDate()}`);
+const month = getZero(`${now.getMonth()}`);
+const year = now.getFullYear();
+
+labelDate.textContent = `${day}/${month}/${year}`;
 
 const createNickname = nickname => {
   const userName = nickname
@@ -85,7 +163,10 @@ const addNicknames = acc =>
 
 addNicknames(accounts);
 
-const getUsersOperation = ({ transactions }, sort = false) => {
+const getUsersOperation = (
+  { transactions, transactionsDates },
+  sort = false
+) => {
   containerTransactions.innerHTML = '';
 
   const currentSort = sort
@@ -94,6 +175,12 @@ const getUsersOperation = ({ transactions }, sort = false) => {
 
   currentSort.map((transaction, index) => {
     const transitType = transaction > 0 ? 'deposit' : 'withdrawal';
+    const date = new Date(transactionsDates[index]);
+    const day = getZero(`${date.getDate()}`);
+    const month = getZero(`${date.getMonth()}`);
+    const year = date.getFullYear();
+
+    const transactionDate = `${day}/${month}/${year}`;
 
     containerTransactions.insertAdjacentHTML(
       'afterbegin',
@@ -101,8 +188,8 @@ const getUsersOperation = ({ transactions }, sort = false) => {
           <div class="transactions__type transactions__type--${transitType}">
             ${index + 1} ${transitType}
           </div>
-          
-          <div class="transactions__value">${transaction}$</div>
+          <div class="transactions__date">${transactionDate}</div>
+          <div class="transactions__value">${transaction.toFixed(2)}$</div>
         </div>`
     );
   });
@@ -113,7 +200,7 @@ const userInterface = ({ transactions, interest }) => {
     .filter(deposit => deposit > 0)
     .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
-  labelSumIn.textContent = `${deposits}$`;
+  labelSumIn.textContent = `${deposits.toFixed(2)}$`;
 
   const withdrawals = transactions
     .filter(withdrawal => withdrawal < 0)
@@ -124,15 +211,15 @@ const userInterface = ({ transactions, interest }) => {
     .map(deposit => Math.floor((deposit * interest) / 100))
     .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
-  labelSumOut.textContent = `${withdrawals}$`;
+  labelSumOut.textContent = `${withdrawals.toFixed(2)}$`;
 
   const balance = transactions.reduce(
     (accumulator, currentValue) => accumulator + currentValue,
     0
   );
   accounts.balance = balance;
-  labelBalance.textContent = `${balance}$`;
-  labelSumInterest.textContent = `${depositProc}%`;
+  labelBalance.textContent = `${balance.toFixed(2)}$`;
+  labelSumInterest.textContent = `${depositProc.toFixed(2)}%`;
 };
 
 btnLogin.addEventListener('click', e => {
@@ -142,7 +229,7 @@ btnLogin.addEventListener('click', e => {
     account => account.nickname === inputLoginUsername.value
   );
 
-  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+  if (currentAccount?.pin === +inputLoginPin.value) {
     labelWelcome.textContent = `Hello ${
       currentAccount.userName.split(' ')[0]
     }!`;
@@ -156,7 +243,7 @@ btnLogin.addEventListener('click', e => {
 btnTransfer.addEventListener('click', e => {
   e.preventDefault();
 
-  const transferAmount = Number(inputTransferAmount.value);
+  const transferAmount = +inputTransferAmount.value;
 
   const recipientNick = String(inputTransferTo.value);
 
@@ -173,6 +260,7 @@ btnTransfer.addEventListener('click', e => {
   ) {
     currentAccount.transactions.push(-transferAmount);
     recipientAccount.transactions.push(transferAmount);
+    currentAccount.transactionsDates.push(new Date());
     getUsersOperation(currentAccount);
     userInterface(currentAccount);
   }
@@ -198,21 +286,19 @@ formClose.addEventListener('submit', e => {
 formCredit.addEventListener('submit', e => {
   e.preventDefault();
 
-  const credit = +e.target.elements.credit.value;
-  console.log(credit);
+  const credit = Math.floor(e.target.elements.credit.value);
 
   if (
     credit > 0 &&
     currentAccount.transactions.some(trans => trans > (credit * 10) / 100)
   ) {
     currentAccount.transactions.push(credit);
+    currentAccount.transactionsDates.push(new Date());
     userInterface(currentAccount);
     getUsersOperation(currentAccount);
   }
   formCredit.reset();
 });
-
-let sortedTransaction = false;
 
 btnSort.addEventListener('click', e => {
   e.preventDefault();
@@ -220,5 +306,9 @@ btnSort.addEventListener('click', e => {
   getUsersOperation(currentAccount, !sortedTransaction);
 
   sortedTransaction = !sortedTransaction;
-  console.log('click');
 });
+
+currentAccount = account1;
+getUsersOperation(currentAccount);
+userInterface(currentAccount);
+containerApp.style.opacity = 100;
