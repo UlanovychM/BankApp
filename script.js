@@ -11,11 +11,11 @@ const account1 = {
     '2023-10-02T14:43:31.074Z',
     '2023-10-29T11:24:19.761Z',
     '2023-11-15T10:45:23.907Z',
-    '2024-01-22T12:17:46.255Z',
+    '2024-02-22T12:17:46.255Z',
     '2024-02-12T15:14:06.486Z',
     '2024-03-09T11:42:26.371Z',
     '2024-05-21T07:43:59.331Z',
-    '2024-06-22T15:21:20.814Z',
+    '2024-10-24T15:21:20.814Z',
   ],
   currency: 'USD',
   locale: 'en-US',
@@ -141,6 +141,23 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 const getZero = num => num.padStart(2, '0');
 
+const displayDate = date => {
+  const getDayOfDate = (date1, date2) =>
+    Math.round(Math.abs((date2 - date1) / (1000 * 60 * 60 * 24)));
+  const dayPass = getDayOfDate(new Date(), date);
+
+  if (dayPass === 0) return 'Сьогодні';
+  if (dayPass === 1) return 'Вчора';
+  if (dayPass <= 5) {
+    return `${dayPass} днів назад`;
+  } else {
+    const day = getZero(`${date.getDate()}`);
+    const month = getZero(`${date.getMonth() + 1}`);
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+};
+
 const now = new Date();
 const day = getZero(`${now.getDate()}`);
 const month = getZero(`${now.getMonth()}`);
@@ -175,12 +192,10 @@ const getUsersOperation = (
 
   currentSort.map((transaction, index) => {
     const transitType = transaction > 0 ? 'deposit' : 'withdrawal';
-    const date = new Date(transactionsDates[index]);
-    const day = getZero(`${date.getDate()}`);
-    const month = getZero(`${date.getMonth()}`);
-    const year = date.getFullYear();
 
-    const transactionDate = `${day}/${month}/${year}`;
+    const date = new Date(transactionsDates[index]);
+
+    const transactionDate = displayDate(date);
 
     containerTransactions.insertAdjacentHTML(
       'afterbegin',
