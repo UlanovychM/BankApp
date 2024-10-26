@@ -94,6 +94,13 @@ const account5 = {
 const accounts = [account1, account2, account3, account4, account5];
 let currentAccount;
 let sortedTransaction = false;
+const options = {
+  hour: 'numeric',
+  minute: 'numeric',
+  day: 'numeric',
+  month: 'numeric',
+  year: 'numeric',
+};
 
 // Elements
 const labelWelcome = document.querySelector('.welcome');
@@ -124,6 +131,14 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+const formateTransaction = (locale, currency, transaction) =>
+  new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency,
+  }).format(transaction);
+
+//---------------------------------------------
+
 // const now = new Date();
 // const day = now.getDate();
 // const month = now.getMonth();
@@ -139,9 +154,32 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 // labelDate.textContent = `${getZero(day)}/${getZero(month)}/${year}`;
 
-const getZero = num => num.padStart(2, '0');
+//---------------------------------------------
 
-const displayDate = date => {
+// const getZero = num => num.padStart(2, '0');
+
+//---------------------------------------------
+
+// const displayDate = date => {
+//   const getDayOfDate = (date1, date2) =>
+//     Math.round(Math.abs((date2 - date1) / (1000 * 60 * 60 * 24)));
+//   const dayPass = getDayOfDate(new Date(), date);
+
+//   if (dayPass === 0) return 'Сьогодні';
+//   if (dayPass === 1) return 'Вчора';
+//   if (dayPass <= 5) {
+//     return `${dayPass} дні назад`;
+//   } else {
+//     const day = getZero(`${date.getDate()}`);
+//     const month = getZero(`${date.getMonth() + 1}`);
+//     const year = date.getFullYear();
+//     return `${day}/${month}/${year}`;
+//   }
+// };
+
+//---------------------------------------------
+
+const displayDate = (date, locale) => {
   const getDayOfDate = (date1, date2) =>
     Math.round(Math.abs((date2 - date1) / (1000 * 60 * 60 * 24)));
   const dayPass = getDayOfDate(new Date(), date);
@@ -149,21 +187,22 @@ const displayDate = date => {
   if (dayPass === 0) return 'Сьогодні';
   if (dayPass === 1) return 'Вчора';
   if (dayPass <= 5) {
-    return `${dayPass} днів назад`;
+    return `${dayPass} дні назад`;
   } else {
-    const day = getZero(`${date.getDate()}`);
-    const month = getZero(`${date.getMonth() + 1}`);
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
+    return new Intl.DateTimeFormat(locale).format(date);
   }
 };
+//---------------------------------------------
 
-const now = new Date();
-const day = getZero(`${now.getDate()}`);
-const month = getZero(`${now.getMonth()}`);
-const year = now.getFullYear();
+// const now = new Date();
+// const day = getZero(`${now.getDate()}`);
+// const month = getZero(`${now.getMonth() + 1}`);
+// const year = now.getFullYear();
+//---------------------------------------------
 
-labelDate.textContent = `${day}/${month}/${year}`;
+// const locale = navigator.language;
+// labelDate.textContent = new Intl.DateTimeFormat(locale, options).format(now);
+//---------------------------------------------
 
 const createNickname = nickname => {
   const userName = nickname
@@ -181,7 +220,7 @@ const addNicknames = acc =>
 addNicknames(accounts);
 
 const getUsersOperation = (
-  { transactions, transactionsDates },
+  { transactions, transactionsDates, locale, currency },
   sort = false
 ) => {
   containerTransactions.innerHTML = '';
@@ -195,7 +234,7 @@ const getUsersOperation = (
 
     const date = new Date(transactionsDates[index]);
 
-    const transactionDate = displayDate(date);
+    const transactionDate = displayDate(date, locale);
 
     containerTransactions.insertAdjacentHTML(
       'afterbegin',
@@ -204,18 +243,22 @@ const getUsersOperation = (
             ${index + 1} ${transitType}
           </div>
           <div class="transactions__date">${transactionDate}</div>
-          <div class="transactions__value">${transaction.toFixed(2)}$</div>
+          <div class="transactions__value">${formateTransaction(
+            locale,
+            currency,
+            transaction
+          )}</div>
         </div>`
     );
   });
 };
 
-const userInterface = ({ transactions, interest }) => {
+const userInterface = ({ transactions, interest, locale, currency }) => {
   const deposits = transactions
     .filter(deposit => deposit > 0)
     .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
-  labelSumIn.textContent = `${deposits.toFixed(2)}$`;
+  labelSumIn.textContent = formateTransaction(locale, currency, deposits);
 
   const withdrawals = transactions
     .filter(withdrawal => withdrawal < 0)
@@ -226,14 +269,16 @@ const userInterface = ({ transactions, interest }) => {
     .map(deposit => Math.floor((deposit * interest) / 100))
     .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
-  labelSumOut.textContent = `${withdrawals.toFixed(2)}$`;
+  labelSumOut.textContent = formateTransaction(locale, currency, withdrawals);
 
   const balance = transactions.reduce(
     (accumulator, currentValue) => accumulator + currentValue,
     0
   );
+
+  labelDate.textContent = new Intl.DateTimeFormat(locale, options).format();
   accounts.balance = balance;
-  labelBalance.textContent = `${balance.toFixed(2)}$`;
+  labelBalance.textContent = formateTransaction(locale, currency, balance);
   labelSumInterest.textContent = `${depositProc.toFixed(2)}%`;
 };
 
