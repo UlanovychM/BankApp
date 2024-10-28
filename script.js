@@ -391,11 +391,11 @@ formCredit.addEventListener('submit', e => {
       currentAccount.transactionsDates.push(new Date());
       userInterface(currentAccount);
       getUsersOperation(currentAccount);
-
-      clearInterval(currentTimer);
-      currentTimer = startLogoutTimer();
     }, 5000);
   }
+
+  clearInterval(currentTimer);
+  currentTimer = startLogoutTimer();
   formCredit.reset();
 });
 
