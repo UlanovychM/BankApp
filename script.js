@@ -102,6 +102,8 @@ const options = {
   year: 'numeric',
 };
 
+let currentTimer;
+
 // Elements
 const labelWelcome = document.querySelector('.welcome');
 const labelDate = document.querySelector('.date');
@@ -282,6 +284,30 @@ const userInterface = ({ transactions, interest, locale, currency }) => {
   labelSumInterest.textContent = `${depositProc.toFixed(2)}%`;
 };
 
+const startLogoutTimer = () => {
+  let time = 300;
+
+  const logOutTimerCallBack = () => {
+    const minutes = String(Math.trunc(time / 60)).padStart(2, '0');
+    const seconds = String(Math.trunc(time % 60)).padStart(2, '0');
+    labelTimer.textContent = `${minutes}:${seconds}`;
+
+    if (time === 0) {
+      clearInterval(logoutTimer);
+      containerApp.style.opacity = 0;
+      labelWelcome.textContent = 'Войдите в свой аккаунт';
+    }
+
+    time--;
+  };
+
+  logOutTimerCallBack();
+
+  const logoutTimer = setInterval(logOutTimerCallBack, 1000);
+
+  return logoutTimer;
+};
+
 btnLogin.addEventListener('click', e => {
   e.preventDefault();
 
@@ -294,6 +320,11 @@ btnLogin.addEventListener('click', e => {
       currentAccount.userName.split(' ')[0]
     }!`;
     containerApp.style.opacity = 100;
+
+    if (currentTimer) clearInterval(currentTimer);
+
+    currentTimer = startLogoutTimer();
+
     getUsersOperation(currentAccount);
     userInterface(currentAccount);
   }
@@ -323,6 +354,9 @@ btnTransfer.addEventListener('click', e => {
     currentAccount.transactionsDates.push(new Date());
     getUsersOperation(currentAccount);
     userInterface(currentAccount);
+
+    clearInterval(currentTimer);
+    currentTimer = startLogoutTimer();
   }
 });
 
@@ -352,10 +386,15 @@ formCredit.addEventListener('submit', e => {
     credit > 0 &&
     currentAccount.transactions.some(trans => trans > (credit * 10) / 100)
   ) {
-    currentAccount.transactions.push(credit);
-    currentAccount.transactionsDates.push(new Date());
-    userInterface(currentAccount);
-    getUsersOperation(currentAccount);
+    setTimeout(() => {
+      currentAccount.transactions.push(credit);
+      currentAccount.transactionsDates.push(new Date());
+      userInterface(currentAccount);
+      getUsersOperation(currentAccount);
+
+      clearInterval(currentTimer);
+      currentTimer = startLogoutTimer();
+    }, 5000);
   }
   formCredit.reset();
 });
@@ -368,7 +407,7 @@ btnSort.addEventListener('click', e => {
   sortedTransaction = !sortedTransaction;
 });
 
-currentAccount = account1;
-getUsersOperation(currentAccount);
-userInterface(currentAccount);
-containerApp.style.opacity = 100;
+// currentAccount = account1;
+// getUsersOperation(currentAccount);
+// userInterface(currentAccount);
+// containerApp.style.opacity = 100;
